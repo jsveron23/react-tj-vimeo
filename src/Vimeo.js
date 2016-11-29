@@ -89,13 +89,14 @@ Vimeo.defaultProps = {
   onPause       : noop,
   onEnded       : noop,
   onProgress    : noop,
+  onSeeked      : noop,
   onTimeupdate  : noop,
   onVolumeChange: noop,
   onError       : noop
 };
 
-// Vimeo.propTypes = {
-//   videoId: PropTypes.string.isRequired
-// };
+Vimeo.propTypes = {
+  videoId: PropTypes.string.isRequired
+};
 
 export default Vimeo;
