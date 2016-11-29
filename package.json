@@ -1,0 +1,60 @@
+{
+  "name": "react-tj-vimeo",
+  "version": "0.0.1",
+  "author": "Tony Jin <jsveron23@gmail.com>",
+  "description": "TJ Youtube iframe API for React",
+  "keywords": [
+    "react",
+    "vimeo",
+    "tj",
+    "component",
+    "api"
+  ],
+  "babel": {
+    "presets": [
+      "es2015",
+      "react",
+      "state-0"
+    ]
+  },
+  "homepage": "http://tonyj.in",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/jsveron23/react-tj-vimeo"
+  },
+  "bugs": {
+    "url": "https://github.com/jsveron23/react-tj-vimeo/issues"
+  },
+  "engines": {
+    "node": ">=4.2.4"
+  },
+  "files": [
+    "lib"
+  ],
+  "main": "lib/index.js",
+  "scripts": {
+    "build": "babel src --out-dir lib",
+    "lint": "eslint src",
+    "clean": "rm -rf lib",
+    "prepublish": "npm run build"
+  },
+  "devDependencies": {
+    "babel": "^6.5.2",
+    "babel-cli": "^6.18.0",
+    "babel-core": "^6.18.2",
+    "babel-eslint": "^7.1.0",
+    "babel-loader": "^6.2.7",
+    "babel-preset-es2015": "^6.18.0",
+    "babel-preset-react": "^6.16.0",
+    "babel-preset-stage-0": "^6.16.0",
+    "eslint": "^3.10.2",
+    "eslint-loader": "^1.6.1",
+    "eslint-plugin-react": "^6.7.1"
+  },
+  "dependencies": {
+    "@vimeo/player": "^1.0.6",
+    "react": "^15.4.0",
+    "react-dom": "^15.4.0"
+  }
+}
