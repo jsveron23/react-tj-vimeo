@@ -18,6 +18,10 @@ Then open http://localhost:3000 in a browser.
 npm install react-tj-vimeo
 ```
 
+## Screenshot
+
+![Screenshot](screenshot.png)
+
 ## License
 
 MIT, see the [LICENSE](LICENSE) file for detail.
