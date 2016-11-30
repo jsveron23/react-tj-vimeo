@@ -1,8 +1,8 @@
 {
   "name": "react-tj-vimeo",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "author": "Tony Jin <jsveron23@gmail.com>",
-  "description": "TJ Youtube iframe API for React",
+  "description": "TJ Vimeo API for React",
   "keywords": [
     "react",
     "vimeo",
