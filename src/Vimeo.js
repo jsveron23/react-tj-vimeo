@@ -2,7 +2,6 @@ import React, {
   Component,
   PropTypes
 } from 'react';
-import { extend as _extend } from 'lodash';
 import VimeoPlayer from '@vimeo/player';
 
 const noop = function() {};
@@ -20,29 +19,39 @@ class Vimeo extends Component {
     super(props);
 
     this.state = {
-      videoId     : props.videoId,
-      isFullscreen: props.isFullscreen
+      videoId  : props.videoId,
+      supportFS: props.supportFS
     };
 
     this.player = null;
   }
 
+  /**
+   * componentDidMount
+   */
   componentDidMount() {
-    this.initPlayer();
+    this.player = new VimeoPlayer(this.iframe);
+
+    this.addEvents(this.player);
   }
 
+  /**
+   * componentWillUnmount
+   */
   componentWillUnmount() {
-    this.player.off('loaded');
-    this.player.off('play');
-    this.player.off('pause');
-    this.player.off('ended');
-    this.player.off('progress');
-    this.player.off('timeupdate');
-    this.player.off('seeked');
-    this.player.off('volumechange');
-    this.player.off('error');
+    this.removeEvents(this.player);
   }
 
+  /**
+   * shouldComponentUpdate
+   */
+  shouldComponentUpdate() {
+    return false;
+  }
+
+  /**
+   * render
+   */
   render() {
     return (
       <iframe ref={(el) => this.iframe = el}
@@ -50,11 +59,11 @@ class Vimeo extends Component {
               width={this.props.width}
               height={this.props.height}
               frameBorder="0"
-              allowFullScreen={this.state.isFullscreen} />
+              allowFullScreen={this.state.supportFS} />
     );
   }
 
-  initPlayer() {
+  addEvents(player) {
     const {
       onLoaded,
       onPlay,
@@ -67,20 +76,30 @@ class Vimeo extends Component {
       onError
     } = this.props;
 
-    this.player = new VimeoPlayer(this.iframe);
-
     // event listeners
-    this.player.on('loaded', (res) => {
-      onLoaded(this.player, res.id);
+    player.on('loaded', (res) => {
+      onLoaded(player, this.iframe);
     });
-    this.player.on('play', onPlay);
-    this.player.on('pause', onPause);
-    this.player.on('ended', onEnded);
-    this.player.on('progress', onProgress);
-    this.player.on('seeked', onSeeked);
-    this.player.on('timeupdate', onTimeupdate);
-    this.player.on('volumechange', onVolumeChange);
-    this.player.on('error', onError);
+    player.on('play', onPlay);
+    player.on('pause', onPause);
+    player.on('ended', onEnded);
+    player.on('progress', onProgress);
+    player.on('seeked', onSeeked);
+    player.on('timeupdate', onTimeupdate);
+    player.on('volumechange', onVolumeChange);
+    player.on('error', onError);
+  }
+
+  removeEvents(player) {
+    player.off('loaded');
+    player.off('play');
+    player.off('pause');
+    player.off('ended');
+    player.off('progress');
+    player.off('timeupdate');
+    player.off('seeked');
+    player.off('volumechange');
+    player.off('error');
   }
 }
 

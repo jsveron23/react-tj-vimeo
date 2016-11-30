@@ -35,9 +35,8 @@ export default class App extends Component {
     super(props);
 
     this.state = {
-      // option
-      videoId : 193391290,
-      autoPlay: true,
+      // video id
+      videoId: 193391290,
 
       // controlable
       volume: 100,
@@ -53,13 +52,18 @@ export default class App extends Component {
       thumbnail: '',
 
       // fullscreen
-      isFullscreen: false,
+      supportFS: false,
 
       // time
       duration: 0,
       seconds : 0,
-      percent : 0
+      percent : 0,
+
+      // detach
+      detachBtnName: 'Detach'
     };
+
+    this.autoPlay = true;
   }
 
   /**
@@ -88,6 +92,8 @@ export default class App extends Component {
                           onClick={::this.handleStopVideo} />
                   <Button title="Loop"
                           onClick={::this.handleLoopVideo} />
+                  <Button title={this.state.detachBtnName}
+                          onClick={::this.handleDetachVideo} />
                 </Act>
 
 
@@ -130,13 +136,13 @@ export default class App extends Component {
               <Text label="State/Duration/Time/%:"
                     text={`${this.state.stateMsg} / ${this.state.duration} / ${this.state.seconds} / ${this.state.percent}%`} />
               <Text label="Loop/Fullscreen:"
-                    text={`${this.state.loop ? 'on' : 'off'} / ${this.state.isFullscreen ? 'on' : 'off'}`} />
+                    text={`${this.state.loop ? 'on' : 'off'} / ${this.state.supportFS ? 'on' : 'off'}`} />
             </Act>
           </div>
 
           <div className="cp-wrap">
             <Vimeo videoId={this.state.videoId}
-                   isFullscreen={this.state.isFullscreen}
+                   supportFS={this.state.supportFS}
                    onLoaded={::this.handleLoaded}
                    onPlay={::this.handlePlay}
                    onPause={::this.handlePause}
@@ -145,6 +151,10 @@ export default class App extends Component {
                    onVolumeChange={::this.handleVolumeChange}
                    onError={::this.handleError} />
           </div>
+
+          <div ref={(el) => this.detachElement = el}
+               id="detach-video"
+               className="is-hidden" />
         </section>
       </div>
     );
@@ -183,6 +193,8 @@ export default class App extends Component {
    * @param {object} evt
    */
   handleToggleVideo(evt) {
+    evt.preventDefault();
+
     if (this.state.currentState === 1) {
       this.pause();
     } else {
@@ -237,6 +249,26 @@ export default class App extends Component {
   }
 
   /**
+   * Handle detach / attach video
+   * @param {object} evt
+   */
+  handleDetachVideo(evt) {
+    evt.preventDefault();
+
+    if (this.iframe.getAttribute('id') === 'detach-video') {
+      this.iframe.removeAttribute('id');
+      this.setState({
+        detachBtnName: 'Detach'
+      });
+    } else {
+      this.iframe.setAttribute('id', 'detach-video');
+      this.setState({
+        detachBtnName: 'Attach'
+      });
+    }
+  }
+
+  /**
    * Handle volume bar
    * @param {string} val
    */
@@ -282,33 +314,16 @@ export default class App extends Component {
    * Handle Loaded
    * @event
    * @param {object} player
-   * @param {string} id
+   * @param {object} iframe
    */
-  handleLoaded(player, id) {
+  handleLoaded(player, iframe) {
     this.player = player;
-    this.play().then(() => {
-      if (!this.state.autoPlay) {
-        this.player.unload();
-      }
-
-      this.player.setColor(this.state.color);
-
-      return this.player.getVideoTitle();
-    }).then((title) => {
-      this.setState({
-        title : title
-      });
-
+    this.iframe = iframe;
+    this.player.setColor(this.state.color).then(() => {
       return this.player.getVolume();
     }).then((volume) => {
       this.setState({
         volume: volume * 100
-      });
-
-      return this.player.getDuration();
-    }).then((duration) => {
-      this.setState({
-        duration: duration
       });
 
       return fetch(`https://vimeo.com/api/oembed.json?url=https%3A//vimeo.com/${this.state.videoId}`);
@@ -316,9 +331,15 @@ export default class App extends Component {
       return res.json();
     }).then((json) => {
       this.setState({
+        title    : json.title,
+        duration : json.duration,
         author   : json.author_name,
         thumbnail: json.thumbnail_url
       });
+
+      if (this.autoPlay) {
+        this.play();
+      }
 
       // console.log(json);
     });
