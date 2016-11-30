@@ -63,12 +63,15 @@ class Vimeo extends Component {
       onSeeked,
       onTimeupdate,
       onVolumeChange,
-      onError } = this.props;
+      onError
+    } = this.props;
 
     this.player = new VimeoPlayer(this.iframe);
     this.player.ready().then(() => {
       onReady(this.player);
     });
+
+    // event listeners
     this.player.on('play', onPlay);
     this.player.on('pause', onPause);
     this.player.on('ended', onEnded);

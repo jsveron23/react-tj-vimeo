@@ -31,10 +31,15 @@ export default class App extends Component {
 
     this.state = {
       videoId     : 193391290,
-      stateMsg    : '',
+      stateMsg    : 'Loading...',
+      title       : 'Loading...',
       volume      : 100,
       loop        : false,
-      isFullscreen: true
+      isFullscreen: false,
+      color       : '#00adef',
+      duration    : 0,
+      seconds     : 0,
+      percent     : 0
     };
   }
 
@@ -58,27 +63,33 @@ export default class App extends Component {
                       onClick={::this.handleLoopVideo} />
             </Act>
 
-            <Act title="Volume Control">
-              <Input type="range"
-                     onChange={::this.handleVolume}
-                     value={this.state.volume} />
+            <div className="flex flex-row">
+              <Act title="Volume Control">
+                <Input type="range"
+                       onChange={::this.handleVolume}
+                       value={this.state.volume} />
+              </Act>
+
+              <Act title="Progress Video">
+                <Input type="range"
+                       onChange={::this.handleProgress}
+                       value={this.state.percent} />
+              </Act>
+            </div>
+
+            <Act title="Color">
+              <Input type="color"
+                     onChange={::this.handleColor}
+                     value={this.state.color} />
             </Act>
 
             <Act title="Information">
-              <Text label="Id:"
-                    text={this.state.videoId} />
-              <Text label="Title:"
-                    text={this.state.title} />
-              <Text label="State:"
-                    text={this.state.stateMsg} />
-              <Text label="Duration:"
-                    text={this.state.duration} />
-              <Text label="Timeupdate:"
-                    text={this.state.seconds} />
-              <Text label="Loop:"
-                    text={this.state.loop ? 'on' : 'off'} />
-              <Text label="Fullscreen:"
-                    text={this.state.isFullscreen ? 'on' : 'off'} />
+              <Text label="Video ID/Title:"
+                    text={`${this.state.videoId} / ${this.state.title}`} />
+              <Text label="State/Duration/Time:"
+                    text={`${this.state.stateMsg} / ${this.state.duration} / ${this.state.seconds}`} />
+              <Text label="Loop/Fullscreen:"
+                    text={`${this.state.loop ? 'on' : 'off'} / ${this.state.isFullscreen ? 'on' : 'off'}`} />
             </Act>
           </div>
 
@@ -104,6 +115,22 @@ export default class App extends Component {
     this.setState(obj);
   }
 
+  handleProgress(val) {
+    this.player.setCurrentTime(parseInt(val, 10) / 100 * this.state.duration).then(() => {
+      this.changeState({
+        percent: parseInt(val, 10)
+      });
+    });
+  }
+
+  handleColor(val) {
+    this.player.setColor(val).then((color) => {
+      this.changeState({
+        color: color
+      });
+    });
+  }
+
   handleLoopVideo() {
     const loop = this.state.loop;
 
@@ -117,6 +144,8 @@ export default class App extends Component {
     this.player = player;
 
     this.player.play();
+
+    this.player.setColor(this.state.color);
 
     this.player.getVideoTitle().then((title) => {
       this.changeState({
@@ -159,13 +188,13 @@ export default class App extends Component {
 
   handleTimeupdate(res) {
     this.changeState({
-      percent: res.percent,
+      percent: res.percent * 100,
       seconds: res.seconds
     });
   }
 
   handleError(err) {
-    console.error(err);
+    console.error(`${err.method}/${err.name}: ${err.message}`);
   }
 
   handleVolumeChange(res) {

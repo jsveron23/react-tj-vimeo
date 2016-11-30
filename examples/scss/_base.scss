@@ -36,6 +36,8 @@ ol {
 
 input,
 button {
+  outline: 0;
+
   &:focus {
     outline: 0;
   }
