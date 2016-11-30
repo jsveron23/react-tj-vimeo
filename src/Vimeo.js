@@ -32,6 +32,7 @@ class Vimeo extends Component {
   }
 
   componentWillUnmount() {
+    this.player.off('loaded');
     this.player.off('play');
     this.player.off('pause');
     this.player.off('ended');
@@ -55,7 +56,7 @@ class Vimeo extends Component {
 
   initPlayer() {
     const {
-      onReady,
+      onLoaded,
       onPlay,
       onPause,
       onEnded,
@@ -67,11 +68,11 @@ class Vimeo extends Component {
     } = this.props;
 
     this.player = new VimeoPlayer(this.iframe);
-    this.player.ready().then(() => {
-      onReady(this.player);
-    });
 
     // event listeners
+    this.player.on('loaded', (res) => {
+      onLoaded(this.player, res.id);
+    });
     this.player.on('play', onPlay);
     this.player.on('pause', onPause);
     this.player.on('ended', onEnded);
@@ -87,7 +88,7 @@ Vimeo.defaultProps = {
   width         : '100%',
   height        : '100%',
   isFullscreen  : true,
-  onReady       : noop,
+  onLoaded      : noop,
   onPlay        : noop,
   onPause       : noop,
   onEnded       : noop,
