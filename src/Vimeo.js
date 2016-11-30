@@ -96,7 +96,7 @@ Vimeo.defaultProps = {
 };
 
 Vimeo.propTypes = {
-  videoId: PropTypes.string.isRequired
+  videoId: PropTypes.number.isRequired
 };
 
 export default Vimeo;
